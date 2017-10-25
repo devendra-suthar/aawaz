@@ -166,7 +166,7 @@ class GestureRecognition:
                             # Flushing the data buffered while the script was busy speaking the text
                             self.arduinoSerialData.flushInput()
                             continue
-                        print(predicted)
+                        yield predicted
 
         except KeyboardInterrupt:
             pass
