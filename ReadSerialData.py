@@ -12,7 +12,7 @@ while 1 == 1:
     print('\t 2. Press " v " to VIEW TRAINING (GESTURES RECORDED)')
     print('\t 3. Press " t " to TRAIN THE DEVICE')
     print('\t 4. Press " p " to START PREDICTION\n')
-    print('\t Press any other key to stop recording\n')
+    print('\t Press Ctrl+C to Stop current action.\n')
 
     choice = input('Enter your choice : ')
 
