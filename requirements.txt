@@ -14,7 +14,6 @@ MarkupSafe==1.0
 numpy==1.13.3
 pandas==0.21.0
 py==1.5.2
-pypiwin32==220
 pyserial==3.4
 python-lambda==2.2.0
 requests==2.18.4
