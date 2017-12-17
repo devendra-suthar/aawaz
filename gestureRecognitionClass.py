@@ -13,7 +13,7 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.metrics import accuracy_score
 
 # Creating a instance for speech
-speak = wincl.Dispatch("SAPI.SpVoice")
+#speak = wincl.Dispatch("SAPI.SpVoice")
 
 class GestureRecognition:
 
@@ -109,7 +109,7 @@ class GestureRecognition:
                 # b' is newline characters from serail data
                 if l[0] == "b'DoubleTapDetected":
                     print("Sorry My fault")
-                    speak.Speak("Sorry I predicted it Incorrectly")
+                    #speak.Speak("Sorry I predicted it Incorrectly")
 
                     # Flushing the data buffered while the script was busy speaking the text
                     self.arduinoSerialData.flushInput()
