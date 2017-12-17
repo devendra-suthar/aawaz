@@ -52,7 +52,5 @@ def closeForm():
     return redirect('/serverApp#arduino')
 
 if __name__ == "__main__":
-    app.run(debug=True, host= '192.168.43.241')
-    # app.run(debug=True, host= '172.16.43.100')
-    # app.run(debug=True)
+    app.run(debug=True)
 
