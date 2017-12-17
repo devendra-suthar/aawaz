@@ -1,11 +1,9 @@
 import pandas
 # Importing serail library
 import serial
-import os
-from gtts import gTTS
-# # Importing microsoft libraries (contains kbhit(), getch())
+# Importing microsoft libraries (contains kbhit(), getch())
 # import msvcrt
-# # Importing Text to Speech
+# Importing Text to Speech
 # import win32com.client as wincl
 
 # Importing sklearn library for Machine Learning
@@ -14,39 +12,37 @@ from sklearn.preprocessing import MinMaxScaler
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.metrics import accuracy_score
 
-# # Creating a instance for speech
-# speak = wincl.Dispatch("SAPI.SpVoice")
+# Creating a instance for speech
+speak = wincl.Dispatch("SAPI.SpVoice")
 
 class GestureRecognition:
 
     def __init__(self):
         self.knn = KNeighborsClassifier(n_neighbors=20)
-        # Create Serial port object called arduinoSerialData
-        # self.arduinoSerialData = serial.Serial('com4', 9600)
-        self.arduinoSerialData = serial.Serial('/dev/ttyACM0', 9600)
+        # self.connectToDevice()
 
+    def connectToDevice(self):
+        # Create Serial port object called arduinoSerialData
+        self.arduinoSerialData = serial.Serial('com3', 9600)
 
     # Reading data from serial input until keyboard interrupt (CTRL+C)
     def readData(self, gestureNum):
         df = pandas.DataFrame()
         count = 0
         self.arduinoSerialData.flushInput()
-        try:
-            while True:
-                if self.arduinoSerialData.inWaiting() > 0:
-                    sensorData = str(self.arduinoSerialData.readline())
-                    l = sensorData.split(' ')
-                    row = pandas.Series([gestureNum, count, l[1], l[2], l[3], l[4], l[5], l[6], l[7], l[8][:-5]],
-                                        ['gest_num', 'sample_count', 'ax', 'ay', 'az', 'gx', 'gy', 'gz', 'o', 'm'])
-                    df = df.append([row])
-                    print(gestureNum, count, l[1], l[2], l[3], l[4], l[5], l[6], l[7], l[8][:-5])
-                    count += 1
+        while 1:
+            if self.arduinoSerialData.inWaiting() > 0:
+                sensorData = str(self.arduinoSerialData.readline())
+                l = sensorData.split(' ')
+                row = pandas.Series([gestureNum, count, l[1], l[2], l[3], l[4], l[5], l[6], l[7], l[8][:-5]],
+                                    ['gest_num', 'sample_count', 'ax', 'ay', 'az', 'gx', 'gy', 'gz', 'o', 'm'])
+                df = df.append([row])
+                print(gestureNum, count, l[1], l[2], l[3], l[4], l[5], l[6], l[7], l[8][:-5])
+                count += 1
 
-                # x = msvcrt.kbhit()
-                # if x:
-                #     break
-        except KeyboardInterrupt:
-            print("Data Recorded. Predicting Gesture")
+            # x = msvcrt.kbhit()
+            # if x:
+                # break
 
         return df
 
@@ -98,78 +94,67 @@ class GestureRecognition:
     # Starting detection of gestures
     def startPredicting(self):
         capturedData = pandas.DataFrame()
-
         self.arduinoSerialData.flushInput()
 
-        try:
-            while True:
-                if self.arduinoSerialData.inWaiting() > 0:
-                    sensorData = str(self.arduinoSerialData.readline())
-                    # value of l read from serial
-                    # ["b'Detecting_Gesture:", '2087', '-466', '7265', '-14.30', '8.19', '-71.81', '0', "2000\\r\\n'"]
+        while not msvcrt.kbhit():
+            if self.arduinoSerialData.inWaiting() > 0:
+                sensorData = str(self.arduinoSerialData.readline())
+                # value of l read from serial
+                # ["b'Detecting_Gesture:", '2087', '-466', '7265', '-14.30', '8.19', '-71.81', '0', "2000\\r\\n'"]
 
-                    l = sensorData.split(' ')
+                l = sensorData.split(' ')
 
-                    # value of l read from serial
-                    # ["b'Detecting_Gesture:", '2087', '-466', '7265', '-14.30', '8.19', '-71.81', '0', "2000\\r\\n'"]
-                    # b' is newline characters from serail data
-                    if l[0] == "b'DoubleTapDetected":
-                        print("Sorry My fault")
-                        tts = gTTS(text="Sorry I predicted it Incorrectly", lang ="en-us")
-                        tts.save("tempSpeechFile.mp3")
-                        os.system("mpg321 tempSpeechFile.mp3")
+                # value of l read from serial
+                # ["b'Detecting_Gesture:", '2087', '-466', '7265', '-14.30', '8.19', '-71.81', '0', "2000\\r\\n'"]
+                # b' is newline characters from serail data
+                if l[0] == "b'DoubleTapDetected":
+                    print("Sorry My fault")
+                    speak.Speak("Sorry I predicted it Incorrectly")
 
-                        # Flushing the data buffered while the script was busy speaking the text
-                        self.arduinoSerialData.flushInput()
+                    # Flushing the data buffered while the script was busy speaking the text
+                    self.arduinoSerialData.flushInput()
+
+                    # Emptying the data readed till now
+                    capturedData = pandas.DataFrame()
+                    predicted = []
+                    continue
+                elif l[0] == "b'Detecting_Gesture:":
+                    # using l[8][:-5]] to remove the unnecessory characters brhind the string
+                    row = pandas.Series([l[1], l[2], l[3], l[4], l[5], l[6], l[7], l[8][:-5]],
+                                        ['ax', 'ay', 'az', 'gx', 'gy', 'gz', 'o', 'm'])
+
+                    capturedData = capturedData.append([row])
+
+                    predicted = self.knn.predict(capturedData)
+
+                    if len(predicted) > 20:
+                        output = {}
+                        for x in predicted:
+                            if output.get(x):
+                                output[x] = output.get(x) + 1
+                            else:
+                                output[x] = 1
+
+                        max_key = max(output, key=lambda k: output[k])
+
+                        # if max_key > 12:
+                        labels = pandas.read_csv('GestureLabels.csv')
+                        labels.set_index('gestLabel')
+                        text = labels.get_value(int(max_key-1), 'gestName')
+                        speak.Speak(text)
+
+
+                        # else:
+                        #     speak.Speak("Sorry I didn't understood you, Please try again.")
 
                         # Emptying the data readed till now
                         capturedData = pandas.DataFrame()
                         predicted = []
+
+                        # Flushing the data buffered while the script was busy speaking the text
+                        self.arduinoSerialData.flushInput()
                         continue
-                    elif l[0] == "b'Detecting_Gesture:":
-                        # using l[8][:-5]] to remove the unnecessory characters brhind the string
-                        row = pandas.Series([l[1], l[2], l[3], l[4], l[5], l[6], l[7], l[8][:-5]],
-                                            ['ax', 'ay', 'az', 'gx', 'gy', 'gz', 'o', 'm'])
-
-                        capturedData = capturedData.append([row])
-
-                        predicted = self.knn.predict(capturedData)
-
-                        if len(predicted) > 20:
-                            output = {}
-                            for x in predicted:
-                                if output.get(x):
-                                    output[x] = output.get(x) + 1
-                                else:
-                                    output[x] = 1
-
-                            max_key = max(output, key=lambda k: output[k])
-
-                            # if max_key > 12:
-                            labels = pandas.read_csv('GestureLabels.csv')
-                            labels.set_index('gestLabel')
-                            text = labels.get_value(max_key-1, 'gestName')
-                            tts = gTTS(text=text, lang ="en-us")
-                            tts.save("tempSpeechFile.mp3")
-                            os.system("mpg321 tempSpeechFile.mp3")
-
-
-                            # else:
-                            #     tts = gTTS(text= "Sorry I didn't understood you, Please try again.", lan g=
-                            # tts.save("tempSpeechFile.mp3")
-                            # os.system("mpg321 tempSpeechFile.mp3")en-us")
-
-                            # Emptying the data readed till now
-                            capturedData = pandas.DataFrame()
-                            predicted = []
-
-                            # Flushing the data buffered while the script was busy speaking the text
-                            self.arduinoSerialData.flushInput()
-                            continue
-                        yield predicted
-
-        except KeyboardInterrupt:
-            pass
+                    print(predicted)
 
     def samplePrediction(self):
         df = pandas.read_csv('TrainingData.csv')

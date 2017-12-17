@@ -1,0 +1,105 @@
+.ch-item {
+	width: 100%;
+	height: 100%;
+	border-radius: 50%;
+	position: relative;
+	cursor: default;
+	box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+
+.ch-info {
+	position: relative;
+	width: 100%;
+	height: 100%;
+	border-radius: 50%;
+	overflow: hidden;
+	background: #c9512e url(../images/noise.png);
+	box-shadow: inset 0 0 0 5px rgba(0,0,0,0.05);
+}
+
+.ch-info h3 {
+		color: #fff;
+		text-transform: uppercase;
+		position: relative;
+		letter-spacing: 2px;
+		font-size: 18px;
+		margin: 0 60px;
+		padding: 22px 0 0 0;
+		height: 85px;
+		font-family: 'Open Sans', Arial, sans-serif;
+		text-shadow:
+			0 0 1px #fff,
+			0 1px 2px rgba(0,0,0,0.3);
+}
+
+.ch-info p {
+	color: #fff;
+	padding: 10px 5px;
+	margin: 0 30px;
+	font-size: 12px;
+	border-top: 1px solid rgba(255,255,255,0.5);
+}
+
+.ch-info p a {
+	display: block;
+	color: #333;
+	width: 100px;
+	height: 100px;
+	background: rgba(255,255,255,0.3);
+	border-radius: 50%;
+	color: #fff;
+	font-style: normal;
+	font-weight: 700;
+	text-transform: uppercase;
+	font-size: 9px;
+	letter-spacing: 1px;
+	padding-top: 20px;
+	margin: 1px auto 0px 22px;;
+	font-family: 'Open Sans', Arial, sans-serif;
+	opacity: 10;
+}
+
+.ch-info p a:hover {
+	background: rgba(255,255,255,0.5);
+}
+
+.ch-info p button {
+	display: block;
+	color: #333;
+	width: 100px;
+	height: 100px;
+	background: rgba(255,255,255,0.3);
+	border-radius: 50%;
+	color: #fff;
+	font-style: normal;
+	font-weight: 700;
+	text-transform: uppercase;
+	font-size: 9px;
+	letter-spacing: 1px;
+	padding-top: 20px;
+	margin: 1px auto 0px 22px;;
+	font-family: 'Open Sans', Arial, sans-serif;
+	opacity: 10;
+
+}
+
+.ch-info p button:hover {
+	background: rgba(255,255,255,0.5);
+}
+
+.ch-item:hover .ch-thumb {
+	box-shadow: inset 0 0 0 15px rgba(255,255,255, 0.5), 0 1px 3px rgba(0,0,0,0.2);
+	-webkit-transform: rotate(-110deg);
+	-moz-transform: rotate(-110deg);
+	-o-transform: rotate(-110deg);
+	-ms-transform: rotate(-110deg);
+	transform: rotate(-110deg);
+}
+.ch-item:hover .ch-info p a{
+	opacity: 1;
+	-webkit-transform: translateX(0px) rotate(0deg);
+	-moz-transform: translateX(0px) rotate(0deg);
+	-o-transform: translateX(0px) rotate(0deg);
+	-ms-transform: translateX(0px) rotate(0deg);
+	transform: translateX(0px) rotate(0deg);
+}
